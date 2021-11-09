@@ -121,21 +121,24 @@ public class BuildCombineArchiveJob extends Job {
 		}
 
 		for(Attachment attachment : document.getAttachments()) {
-			String directory = attachment.getHash().substring(0, 2);
-			String filename = attachment.getHash().substring(2) + ".gz";
-			URI type = attachment.getFormat();
-			String name = attachment.getName();
+			if (attachment != null && attachment.getHash() != null) {
+				String directory = attachment.getHash().substring(0, 2);
+				String filename = attachment.getHash().substring(2) + ".gz";
+				URI type = attachment.getFormat();
+				String name = attachment.getName();
 
-			if(name == null) {
-				name = attachment.getDisplayId();
+				if(name == null) {
+					name = attachment.getDisplayId();
+				}
+
+				FileInfo fileInfo = new FileInfo(name, type);
+				Path filePath = Paths.get(".", "uploads", directory, filename);
+
+				attachmentPaths.put(filePath, fileInfo);
+			} else {
+				System.err.println("Skipping: " + attachment);
 			}
-
-			FileInfo fileInfo = new FileInfo(name, type);
-			Path filePath = Paths.get(".", "uploads", directory, filename);
-
-			attachmentPaths.put(filePath, fileInfo);
 		}
-
 		return attachmentPaths;
 	}
 
